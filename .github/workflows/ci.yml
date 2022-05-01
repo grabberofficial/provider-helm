@@ -80,3 +80,29 @@ jobs:
       - name: Get images
         run: |
           docker image ls
+          export PROVIDER_IMAGE=$(docker image ls | grep provider-helm-amd64 | awk '{print $1}')
+          export CONTROLLER_IMAGE=$(docker image ls | grep provider-helm-controller-amd64 | awk '{print $1}')
+          echo "PROVIDER_IMAGE=${PROVIDER_IMAGE}" >> $GITHUB_ENV
+          echo "CONTROLLER_IMAGE=${CONTROLLER_IMAGE}" >> $GITHUB_ENV
+
+      - name: AWS cli install action
+        uses: chrislennon/action-aws-cli@1.1
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: ECR login
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 636334651895.dkr.ecr.eu-central-1.amazonaws.com
+
+      - name: Change tag
+        run: |
+          docker tag "${CONTROLLER_IMAGE}:latest" 636334651895.dkr.ecr.eu-central-1.amazonaws.com/crossplane-helm-provider-controller:v0.10.0
+          docker tag "${PROVIDER_IMAGE}:latest" 636334651895.dkr.ecr.eu-central-1.amazonaws.com/crossplane-helm-provider:v0.10.0
+      - name: Push image
+        run: |
+          docker push 636334651895.dkr.ecr.eu-central-1.amazonaws.com/crossplane-helm-provider-controller:v0.10.0
+          docker push 636334651895.dkr.ecr.eu-central-1.amazonaws.com/crossplane-helm-provider:v0.10.0
