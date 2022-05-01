@@ -7,7 +7,6 @@ on:
       - release-*
   pull_request: {}
   workflow_dispatch: {}
-#
 
 env:
   # Common versions
@@ -293,6 +292,6 @@ jobs:
           # builds by default. Specifying --load does so.
           BUILD_ARGS: "--load"
 
-            - name: Get images
+      - name: Get images
         run: |
           docker image ls
