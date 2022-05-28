@@ -43,7 +43,7 @@ runs:
 
     - name: ECR login
       shell: bash
-      run: aws ecr get-login-password --region ${{ inputs.aws-role }} | docker login --username AWS --password-stdin ${{ inputs.aws-ecr-uri }}
+      run: aws ecr get-login-password --region ${{ inputs.aws-region }} | docker login --username AWS --password-stdin ${{ inputs.aws-ecr-uri }}
 
     - uses: kobtea/setup-jsonnet-action@v1
 
