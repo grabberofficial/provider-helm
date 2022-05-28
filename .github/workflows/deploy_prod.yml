@@ -84,45 +84,21 @@ jobs:
           export PROVIDER_IMAGE=$(docker image ls | grep provider-helm-amd64 | awk '{print $1}')
           echo "PROVIDER_IMAGE=${PROVIDER_IMAGE}" >> $GITHUB_ENV
 
-      - name: AWS cli install action
-        uses: chrislennon/action-aws-cli@1.1
-
-      - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ env.ROLE }}
-          role-duration-seconds: 900 # the ttl of the session, in seconds.
-          aws-region: eu-central-1 # use your region here.
-
-
-      - name: ECR login
-        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $ECR
+      - name: Set env
+        run: |
+          echo "TAG=${ECR}:${{ env.GIT_COMMIT_SHORT_SHA }}" >> $GITHUB_ENV
 
       - name: Change tag
         run: |
-          docker tag "${PROVIDER_IMAGE}:latest" "${ECR}:v0.10.0"
-      - name: Push image
-        run: |
-          docker push "${ECR}:v0.10.0"
+          docker tag "${PROVIDER_IMAGE}:latest" "${TAG}"
 
-      - uses: kobtea/setup-jsonnet-action@v1
-
-      - name: Clone Argo repo
-        uses: actions/checkout@v3
+      - name: Push to ECR and Argo
+        uses: ./.github/actions/argo-push
         with:
-          repository: 'polkapad/argocd'
-          ref: main
+          aws-role: ${{ env.ROLE }}
+          aws-ecr-uri: ${{ env.ECR }}
           ssh-key: ${{ secrets.ARGOCD_REPO_SSH }}
-          path: argo
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+          environment: prod
+          project: crossplane_helm_provider
+          image: ${{ env.TAG }}
 
-      - name: Write TAG to argo
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-        run: |
-          cd argo
-          mkdir -p versions/${{github.repository_owner}}
-          jsonnet libs/ci_image.libsonnet -A env=prod -A project=crossplane_helm_provider -A image="${ECR}:v0.10.0" > out.json
-          mv out.json env.json
-          git config user.email "${{ env.GIT_COMMIT_AUTHOR_EMAIL }}"
-          git config user.name "${{ env.GIT_COMMIT_AUTHOR_NAME }}"
-          git add env.json && git commit -m "${{ env.GIT_COMMIT_MESSAGE_SUBJECT }} ${{ env.GIT_COMMIT_SHORT_SHA }}" && git push || true
