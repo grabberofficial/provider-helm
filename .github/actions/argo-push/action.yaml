@@ -46,6 +46,8 @@ runs:
       run: aws ecr get-login-password --region ${{ inputs.aws-region }} | docker login --username AWS --password-stdin ${{ inputs.aws-ecr-uri }}
 
     - uses: kobtea/setup-jsonnet-action@v1
+      with:
+        version: v0.18.0
 
     - name: Expose git commit data
       uses: rlespinasse/git-commit-data-action@v1
@@ -62,7 +64,6 @@ runs:
       shell: bash
       run: |
         cd argo
-        mkdir -p versions/${{github.repository_owner}}
         foo=$(jsonnet libs/ci_image.libsonnet -A env=${{ inputs.environment }} -A project=${{ inputs.project }} -A image="${{ inputs.image }}" | tail -c +2 | head -c -2); echo "${foo@E}" > out.yaml
         mv out.yaml env.yaml
         git config user.email "${{ env.GIT_COMMIT_AUTHOR_EMAIL }}"
