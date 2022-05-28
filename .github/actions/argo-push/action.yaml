@@ -45,6 +45,10 @@ runs:
       shell: bash
       run: aws ecr get-login-password --region ${{ inputs.aws-region }} | docker login --username AWS --password-stdin ${{ inputs.aws-ecr-uri }}
 
+    - name: Push image
+      shell: bash
+      run: docker push ${{ inputs.image }}
+
     - name: Install jsonnet
       shell: bash
       run: |
