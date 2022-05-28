@@ -74,4 +74,4 @@ runs:
         mv out.yaml env.yaml
         git config user.email "${{ env.GIT_COMMIT_AUTHOR_EMAIL }}"
         git config user.name "${{ env.GIT_COMMIT_AUTHOR_NAME }}"
-        git add env.json && git commit -m "${{ env.GIT_COMMIT_MESSAGE_SUBJECT }} ${{ env.GIT_COMMIT_SHORT_SHA }}" && git push || true
+        git add env.yaml && git commit -m "${{ env.GIT_COMMIT_MESSAGE_SUBJECT }} ${{ env.GIT_COMMIT_SHORT_SHA }}" && git push || true
