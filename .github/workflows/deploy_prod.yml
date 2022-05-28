@@ -39,6 +39,9 @@ jobs:
         with:
           submodules: true
 
+      - name: Expose git commit data
+        uses: rlespinasse/git-commit-data-action@v1
+
       - name: Fetch History
         run: git fetch --prune --unshallow
 
