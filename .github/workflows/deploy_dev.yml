@@ -23,6 +23,10 @@ jobs:
       id-token: write # required to use OIDC authentication
       contents: read # required to checkout the code from the repo
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
 
       - name: Push to ECR and Argo
         uses: ./.github/actions/argo-push
@@ -44,11 +48,6 @@ jobs:
         with:
           version: ${{ env.DOCKER_BUILDX_VERSION }}
           install: true
-
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Expose git commit data
         uses: rlespinasse/git-commit-data-action@v1
