@@ -87,9 +87,6 @@ jobs:
       - name: Change tag
         run: |
           docker tag "${PROVIDER_IMAGE}:latest" "${ECR}:v0.10.0"
-      - name: Push image
-        run: |
-          docker push "${ECR}:v0.10.0"
 
       - name: Push to ECR and Argo
         uses: ./.github/actions/argo-push
