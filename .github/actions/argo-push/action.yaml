@@ -45,9 +45,11 @@ runs:
       shell: bash
       run: aws ecr get-login-password --region ${{ inputs.aws-region }} | docker login --username AWS --password-stdin ${{ inputs.aws-ecr-uri }}
 
-    - uses: kobtea/setup-jsonnet-action@v1
-      with:
-        version: v0.18.0
+    - name: Install jsonnet
+      shell: bash
+      run: |
+        wget https://github.com/google/go-jsonnet/releases/download/v0.18.0/jsonnet-go_0.18.0_linux_amd64.deb
+        sudo dpkg -i jsonnet-go_0.18.0_linux_amd64.deb
 
     - name: Expose git commit data
       uses: rlespinasse/git-commit-data-action@v1
