@@ -13,8 +13,8 @@ env:
   GO_VERSION: '1.17'
   GOLANGCI_VERSION: 'v1.43.0'
   DOCKER_BUILDX_VERSION: 'v0.4.2'
-  ECR: 081239602556.dkr.ecr.eu-central-1.amazonaws.com/polkapad-provider-helm
-  ROLE: "arn:aws:iam::081239602556:role/github-ecr-polkapad-provider-helm"
+  ECR: 081239602556.dkr.ecr.eu-central-1.amazonaws.com/grabberofficial-provider-helm
+  ROLE: "arn:aws:iam::081239602556:role/github-ecr-grabberofficial-provider-helm"
 
 jobs:
   publish-artifacts:
